@@ -8,22 +8,6 @@ from schemas import RecordSchema
 blp = Blueprint("Records", "records", description="Operations on records")
 
 
-# @blp.route("/record/<string:record_id>")
-# class Record(MethodView):
-#     def get(self, record_id):
-#         pass
-#
-#     def delete(self, record_id):
-#         pass
-#
-# @blp.route("/record")
-# class RecordList(MethodView):
-#     def get(self):
-#         pass
-#
-#     def post(self):
-#         pass
-
 @blp.route("/record/<string:record_id>")
 class Record(MethodView):
     @blp.response(200, RecordSchema)
