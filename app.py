@@ -12,7 +12,10 @@ records = [
             {
                 "name": "See No Evil",
                 "position": 1,
-            }
+            },
+            {
+                "name": "Marquee Moon",
+            },
         ]
     }
 ]
