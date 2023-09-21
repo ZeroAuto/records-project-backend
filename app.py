@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_smorest import abort
 
 app = Flask(__name__)
 
@@ -39,7 +40,7 @@ def create_item(name):
             new_item = {"name": request_data["name"], "position": request_data["position"]}
             record["tracks"].append(new_item)
             return new_item, 201
-    return {"message": "Record not found"}, 404
+    return abort(404, messages="Track not found")
 
 
 @app.get("/record/<string:name>")
@@ -47,12 +48,13 @@ def get_record(name):
     for record in records:
         if record["name"] == name:
             return record
-    return {"message": "Record not found"}, 404
+    return abort(404, message="Record not found")
 
 
-@app.get("/record/<string:name>/item")
+@app.get("/record/<string:name>/track")
 def get_item_in_record(name):
     for record in records:
         if record["name"] == name:
             return {"tracks": record["tracks"]}
-    return {"message": "Record not found"}, 404
+    # return {"message": "Record not found"}, 404
+    return abort(404, message="Track not found")
