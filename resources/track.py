@@ -46,7 +46,7 @@ class Track(MethodView):
 class TrackList(MethodView):
     @blp.response(200, TrackSchema(many=True))
     def get(self):
-        return TrackModel.all()
+        return TrackModel.query.all()
 
     @blp.arguments(TrackSchema)
     @blp.response(201, TrackSchema)

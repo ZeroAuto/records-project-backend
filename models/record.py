@@ -6,4 +6,9 @@ class RecordModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     artist = db.Column(db.String(80), nullable=False)
-    tracks = db.relationship("TrackModel", back_populates="record", lazy="dynamic")
+    tracks = db.relationship(
+        "TrackModel",
+        back_populates="store",
+        lazy="dynamic",
+        cascade="all, delete",
+    )
