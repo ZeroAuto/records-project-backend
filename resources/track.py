@@ -1,7 +1,11 @@
 import uuid
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from db import tracks
+
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+
+from db import db
+from models import TrackModel
 from schemas import TrackSchema, TrackUpdateSchema
 
 
@@ -12,50 +16,50 @@ blp = Blueprint("Tracks", "tracks", description="Operations on tracks")
 class Track(MethodView):
     @blp.response(200, TrackSchema)
     def get(self, track_id):
-        try:
-            return tracks[track_id]
-        except KeyError:
-            abort(404, message="Track not found.")
+        track = TrackModel.query.get_or_404(track_id)
 
     def delete(self, track_id):
-        try:
-            del tracks[track_id]
-            return {"message": "Track deleted."}
-        except KeyError:
-            abort(404, message="Track not found.")
+        track = TrackModel.query.get_or_404(track_id)
+        db.session.delete(track)
+        db.session.commit()
+        return {"message": "Track deleted"}
 
     @blp.arguments(TrackUpdateSchema)
     @blp.response(200, TrackSchema)
     def put(self, track_data, track_id):
-        try:
-            track = tracks[track_id]
+        track = TrackModel.query.get(track_id)
 
-            # https://blog.teclado.com/python-dictionary-merge-update-operators/
-            track |= track_data
+        if track:
+            track.position = track_data["position"]
+            track.length = track_data["length"]
+            track.name = track_data["name"]
+        else:
+            track = TrackModel(id=track_id, **track_data)
 
-            return track
-        except KeyError:
-            abort(404, message="Track not found.")
+        db.session.add(track)
+        db.session.commit()
+
+        return track
 
 
 @blp.route("/track")
 class TrackList(MethodView):
     @blp.response(200, TrackSchema(many=True))
     def get(self):
-        return tracks.values()
+        return TrackModel.all()
 
     @blp.arguments(TrackSchema)
     @blp.response(201, TrackSchema)
     def post(self, track_data):
-        for track in tracks.values():
-            if (
-                track_data["name"] == track["name"]
-                and track_data["store_id"] == track["store_id"]
-            ):
-                abort(400, message=f"Track already exists.")
+        track = TrackModel(**track_data)
 
-        track_id = uuid.uuid4().hex
-        track = {**track_data, "id": track_id}
-        tracks[track_id] = track
+        try:
+            db.session.add(track)
+            db.session.commit()
+        except SQLAlchemyError:
+            abort(
+                500,
+                message="An error occured during track creation"
+            )
 
         return track

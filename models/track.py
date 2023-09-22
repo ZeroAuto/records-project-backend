@@ -8,4 +8,4 @@ class TrackModel(db.Model):
     position = db.Column(db.Integer, nullable=False, unique=False)
     length = db.Column(db.Float(precision=2), unique=False, nullable=True)
     record_id = db.Column(db.Integer, db.ForeignKey("records.id"), unique=False, nullable=False)
-    record = db.relationships("RecordModel", back_populates="tracks")
+    record = db.relationship("RecordModel", back_populates="tracks")

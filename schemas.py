@@ -9,7 +9,7 @@ class PlainTrackSchema(Schema):
 class PlainRecordSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
-    arist = fields.Str(required=True)
+    artist = fields.Str(required=True)
 
 class TrackUpdateSchema(Schema):
     name = fields.Str()
