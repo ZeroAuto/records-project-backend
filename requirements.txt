@@ -4,3 +4,4 @@ python-dotenv
 sqlalchemy
 flask-sqlalchemy
 marshmallow
+psycopg2-binary
