@@ -48,6 +48,8 @@ class UserSignup(MethodView):
 
         user = UserModel(
             name = user_data["name"],
+            username = user_data["username"],
+            email = user_data["email"],
             password=pbkdf2_sha256.hash(user_data["password"]),
         )
         db.session.add(user)
