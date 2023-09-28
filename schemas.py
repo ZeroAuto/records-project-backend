@@ -32,8 +32,13 @@ class TrackSchema(PlainTrackSchema):
 class RecordSchema(PlainRecordSchema):
     tracks = fields.List(fields.Nested(PlainTrackSchema()), dump_only=True)
 
-class UserSchema(Schema):
+class PlainUserSchema(Schema):
     id = fields.Int(dump_only=True)
-    name = fields.Str(required=True)
-    password = fields.Str(required=True, load_only=True)
+    username = fields.Str(required=True)
 
+class LoginSchema(PlainUserSchema):
+    password = fields.Str(required=True)
+
+class UserSchema(PlainUserSchema):
+    email = fields.Int(required=True)
+    name = fields.Int(required=True)

@@ -11,7 +11,12 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
 from models import UserModel, UserRecords
-from schemas import UserRecordSchema, UserSchema
+# from schemas import LoginSchema, UserRecordSchema, UserSchema
+from schemas import (
+    LoginSchema,
+    UserRecordSchema,
+    UserSchema,
+)
 from blocklist import BLOCKLIST
 
 
@@ -20,10 +25,10 @@ blp = Blueprint("Users", "users", description="Operations on users")
 
 @blp.route("/login")
 class UserLogin(MethodView):
-    @blp.arguments(UserSchema)
+    @blp.arguments(LoginSchema)
     def post(self, user_data):
         user = UserModel.query.filter(
-            UserModel.name == user_data["name"]
+            UserModel.username == user_data["username"]
         ).first()
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):

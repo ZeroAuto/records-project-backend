@@ -11,3 +11,4 @@ class ArtistModel(db.Model):
         lazy="dynamic",
         cascade="all, delete",
     )
+    bio = db.Column(db.String)

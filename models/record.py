@@ -19,3 +19,4 @@ class RecordModel(db.Model):
         cascade="all, delete",
     )
     users = db.relationship("UserModel", back_populates="records", secondary="users_records")
+    description = db.Column(db.String(255))
