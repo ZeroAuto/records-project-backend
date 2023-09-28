@@ -11,12 +11,17 @@ class PlainRecordSchema(Schema):
     name = fields.Str(required=True)
     artist = fields.Str(required=True)
 
+class UserRecordSchema(Schema):
+    id =fields.Int(dump_only=True)
+    user_id = fields.Int(required=True)
+    record_id = fields.Int(required=True)
+
 class TrackUpdateSchema(Schema):
     name = fields.Str()
     position = fields.Int()
     length = fields.Float()
 
-class  RecordUpdateSchema(Schema):
+class RecordUpdateSchema(Schema):
     name = fields.Str()
     artist = fields.Str()
 
