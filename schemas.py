@@ -12,7 +12,7 @@ class PlainRecordSchema(Schema):
     artist = fields.Str(required=True)
 
 class UserRecordSchema(Schema):
-    id =fields.Int(dump_only=True)
+    id = fields.Int(dump_only=True)
     user_id = fields.Int(required=True)
     record_id = fields.Int(required=True)
 
