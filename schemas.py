@@ -31,3 +31,9 @@ class TrackSchema(PlainTrackSchema):
 
 class RecordSchema(PlainRecordSchema):
     tracks = fields.List(fields.Nested(PlainTrackSchema()), dump_only=True)
+
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True)
+    password = fields.Str(required=True, load_only=True)
+
