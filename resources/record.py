@@ -3,7 +3,10 @@ from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from db import db
-from models import RecordModel
+from models import (
+    ArtistModel,
+    RecordModel,
+)
 from schemas import RecordSchema
 
 
@@ -33,14 +36,30 @@ class RecordList(MethodView):
     @blp.arguments(RecordSchema)
     @blp.response(201, RecordSchema)
     def post(cls, record_data):
-        record = RecordModel(**record_data)
+        artist = ArtistModel.query.filter(
+            ArtistModel.name == record_data["artist"]
+        ).first()
+        # if the artist doesn't exist create it
+        if artist is None:
+            artist = ArtistModel(name=record_data["artist"])
+            db.session.add(artist)
+            db.session.commit()
+            print(artist.id, flush=True)
+        artist_id = artist.id
+        record = RecordModel(
+            name=record_data["name"],
+            artist_id=artist_id,
+            year=record_data["year"],
+            format=record_data["format"]
+        )
         try:
             db.session.add(record)
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             abort(
                 400,
-                message="A record with that name already exists",
+                # message="An IntegrityError error occurred",
+                message=e.args,
             )
         except SQLAlchemyError:
             abort(

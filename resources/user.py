@@ -34,7 +34,10 @@ class UserLogin(MethodView):
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
-            return {"access_token": access_token, "refresh_token": refresh_token}, 200
+            return {
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            }, 200
 
         abort(401, message="Invalid credentials")
 
@@ -47,9 +50,9 @@ class UserSignup(MethodView):
             abort(409, message="A user name with that name already exists.")
 
         user = UserModel(
-            name = user_data["name"],
-            username = user_data["username"],
-            email = user_data["email"],
+            name=user_data["name"],
+            username=user_data["username"],
+            email=user_data["email"],
             password=pbkdf2_sha256.hash(user_data["password"]),
         )
         db.session.add(user)
@@ -75,7 +78,7 @@ class LinkUserToRecord(MethodView):
         if UserRecords.query.filter(UserRecords.record_id == record_id, UserRecords.user_id == user_id):
             abort(400, message="User has already added this record")
 
-        user_record = UserRecords(user_id = user_id, record_id = record_id)
+        user_record = UserRecords(user_id=user_id, record_id=record_id)
 
         try:
             db.session.add(user_record)
