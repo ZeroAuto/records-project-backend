@@ -1,6 +1,6 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
 from models import TrackModel
@@ -15,6 +15,7 @@ class Track(MethodView):
     @blp.response(200, TrackSchema)
     def get(self, track_id):
         track = TrackModel.query.get_or_404(track_id)
+        return track
 
     def delete(self, track_id):
         track = TrackModel.query.get_or_404(track_id)
