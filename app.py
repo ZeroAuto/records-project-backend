@@ -25,7 +25,10 @@ def create_app(db_url=None):
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url or os.getenv(
         "DATABASE_URL", "sqlite:///data.db")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    CORS(app)
+    CORS(
+        app,
+        origins=["http://localhost:3000"],
+    )
     db.init_app(app)
     migrate = Migrate(app, db)
     api = Api(app)
