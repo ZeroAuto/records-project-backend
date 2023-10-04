@@ -7,7 +7,6 @@ from flask_smorest import Api
 
 from db import db
 
-from resources.track import blp as TrackBluePrint
 from resources.record import blp as RecordBluePrint
 from resources.user import blp as UserBluePrint
 
@@ -36,7 +35,6 @@ def create_app(db_url=None):
     with app.app_context():
         db.create_all()
 
-    api.register_blueprint(TrackBluePrint)
     api.register_blueprint(RecordBluePrint)
     api.register_blueprint(UserBluePrint)
 
