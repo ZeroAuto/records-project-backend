@@ -7,7 +7,10 @@ from models import (
     ArtistModel,
     RecordModel,
 )
-from schemas import RecordSchema
+from schemas import (
+    RecordDumpSchema,
+    RecordUpdateSchema,
+)
 
 
 blp = Blueprint("Records", "records", description="Operations on records")
@@ -15,7 +18,7 @@ blp = Blueprint("Records", "records", description="Operations on records")
 
 @blp.route("/record/<string:record_id>")
 class Record(MethodView):
-    @blp.response(200, RecordSchema)
+    @blp.response(200, RecordDumpSchema)
     def get(cls, record_id):
         record = RecordModel.query.get_or_404(record_id)
         return record
@@ -29,12 +32,12 @@ class Record(MethodView):
 
 @blp.route("/record")
 class RecordList(MethodView):
-    @blp.response(200, RecordSchema(many=True))
+    @blp.response(200, RecordDumpSchema(many=True))
     def get(cls):
         return RecordModel.query.all()
 
-    @blp.arguments(RecordSchema)
-    @blp.response(201, RecordSchema)
+    @blp.arguments(RecordUpdateSchema)
+    @blp.response(201, RecordDumpSchema)
     def post(cls, record_data):
         artist = ArtistModel.query.filter(
             ArtistModel.name == record_data["artist"]

@@ -1,6 +1,11 @@
 from marshmallow import Schema, fields
 
 
+class ArtistSchema(Schema):
+    name = fields.Str(dump_only=True)
+    bio = fields.Str(dump_only=True)
+
+
 class PlainTrackSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
@@ -11,7 +16,6 @@ class PlainTrackSchema(Schema):
 class PlainRecordSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
-    artist = fields.Str(required=True)
     year = fields.Int()
     format = fields.Str()
 
@@ -28,8 +32,7 @@ class TrackUpdateSchema(Schema):
     length = fields.Float()
 
 
-class RecordUpdateSchema(Schema):
-    name = fields.Str()
+class RecordUpdateSchema(PlainRecordSchema):
     artist = fields.Str()
 
 
@@ -38,8 +41,8 @@ class TrackSchema(PlainTrackSchema):
     record = fields.Nested(PlainRecordSchema(), dump_only=True)
 
 
-class RecordSchema(PlainRecordSchema):
-    tracks = fields.List(fields.Nested(PlainTrackSchema()), dump_only=True)
+class RecordDumpSchema(PlainRecordSchema):
+    artist = fields.Nested(ArtistSchema(), dump_only=True)
 
 
 class PlainUserSchema(Schema):
