@@ -5,7 +5,7 @@ class ArtistModel(db.Model):
     __tablename__ = "artists"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(80), nullable=False, unique=True)
     records = db.relationship(
         "RecordModel",
         back_populates="artist",
