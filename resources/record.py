@@ -54,16 +54,18 @@ class Record(MethodView):
             record.name = record_data["name"]
             record.year = record_data["year"]
             record.format = record_data["format"]
-
-        # else:
-        #     if "artist" in record_data:
-        #         artist = find_or_create_artist(record_data["artist"])
-        #         record_data["artist_id"] = artist.id
-        #         del record_data["artist"]
-        #     record = RecordModel(id=record_id, **record_data)
-        #     db.session.add(record)
-
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            abort(
+                400,
+                message="An IntegrityError error occurred",
+            )
+        except SQLAlchemyError:
+            abort(
+                500,
+                message="An error occurred during record creation"
+            )
 
         return record
 
@@ -99,11 +101,10 @@ class RecordList(MethodView):
         try:
             db.session.add(record)
             db.session.commit()
-        except IntegrityError as e:
+        except IntegrityError:
             abort(
                 400,
-                # message="An IntegrityError error occurred",
-                message=e.args,
+                message="An IntegrityError error occurred",
             )
         except SQLAlchemyError:
             abort(
