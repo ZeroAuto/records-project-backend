@@ -1,5 +1,6 @@
 from db import db
 
+
 class RecordModel(db.Model):
     __tablename__ = "records"
 
@@ -12,13 +13,8 @@ class RecordModel(db.Model):
         nullable=False
     )
     artist = db.relationship("ArtistModel", back_populates="records")
-    tracks = db.relationship(
-        "TrackModel",
-        back_populates="record",
-        lazy="dynamic",
-        cascade="all, delete",
-    )
-    users = db.relationship("UserModel", back_populates="records", secondary="users_records")
+    users = db.relationship(
+        "UserModel", back_populates="records", secondary="users_records")
     description = db.Column(db.String(255))
     purchased = db.Column(db.Boolean, default=False)
     year = db.Column(db.Integer)

@@ -6,13 +6,6 @@ class ArtistSchema(Schema):
     bio = fields.Str(dump_only=True)
 
 
-class PlainTrackSchema(Schema):
-    id = fields.Str(dump_only=True)
-    name = fields.Str(required=True)
-    position = fields.Int(required=True)
-    length = fields.Float(required=True)
-
-
 class PlainRecordSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
@@ -34,11 +27,6 @@ class TrackUpdateSchema(Schema):
 
 class RecordUpdateSchema(PlainRecordSchema):
     artist = fields.Str()
-
-
-class TrackSchema(PlainTrackSchema):
-    record_id = fields.Int(required=True, load_only=True)
-    record = fields.Nested(PlainRecordSchema(), dump_only=True)
 
 
 class RecordDumpSchema(PlainRecordSchema):
