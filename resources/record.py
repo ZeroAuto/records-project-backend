@@ -13,6 +13,19 @@ from schemas import (
 )
 
 
+def find_or_create_artist(artist_name):
+    artist = ArtistModel.query.filter(
+        ArtistModel.name == artist_name
+    ).first()
+    # if the artist doesn't exist create it
+    if artist is None:
+        artist = ArtistModel(name=artist_name)
+        db.session.add(artist)
+        db.session.commit()
+
+    return artist
+
+
 blp = Blueprint("Records", "records", description="Operations on records")
 
 
@@ -29,25 +42,53 @@ class Record(MethodView):
         db.session.commit()
         return {"message": "Record deleted"}, 200
 
+    @blp.arguments(RecordUpdateSchema)
+    @blp.response(200, RecordDumpSchema)
+    def put(cls, record_data, record_id):
+        record = RecordModel.query.get(record_id)
+
+        if record:
+            if "artist" in record_data:
+                artist = find_or_create_artist(record_data['artist'])
+                record.artist_id = artist.id
+            record.name = record_data["name"]
+            record.year = record_data["year"]
+            record.format = record_data["format"]
+
+        # else:
+        #     if "artist" in record_data:
+        #         artist = find_or_create_artist(record_data["artist"])
+        #         record_data["artist_id"] = artist.id
+        #         del record_data["artist"]
+        #     record = RecordModel(id=record_id, **record_data)
+        #     db.session.add(record)
+
+        db.session.commit()
+
+        return record
+
 
 @blp.route("/record")
 class RecordList(MethodView):
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls):
-        return RecordModel.query.all()
+        records = db.session.query(
+            RecordModel.id,
+            RecordModel.name,
+            RecordModel.year,
+            RecordModel.format,
+            ArtistModel.name.label('artist_name'),
+        ).join(
+            ArtistModel,
+            ArtistModel.id == RecordModel.artist_id
+        )
+
+        return records
 
     @blp.arguments(RecordUpdateSchema)
     @blp.response(201, RecordDumpSchema)
     def post(cls, record_data):
-        artist = ArtistModel.query.filter(
-            ArtistModel.name == record_data["artist"]
-        ).first()
-        # if the artist doesn't exist create it
-        if artist is None:
-            artist = ArtistModel(name=record_data["artist"])
-            db.session.add(artist)
-            db.session.commit()
-            print(artist.id, flush=True)
+        artist = find_or_create_artist(record_data["artist"])
         artist_id = artist.id
         record = RecordModel(
             name=record_data["name"],
