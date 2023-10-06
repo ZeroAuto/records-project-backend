@@ -1,4 +1,5 @@
 import os
+import secrets
 
 from flask import Flask
 from flask_cors import CORS
@@ -27,14 +28,14 @@ def create_app(db_url=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     CORS(
         app,
-        origins=["http://localhost:3000"],
+        origins=[os.getenv("FRONTEND_URL", "http://localhost:3000")],
     )
     db.init_app(app)
     migrate = Migrate(app, db)
     api = Api(app)
 
-    # app.config["JWT_SECRET_KEY"] = secrets.SystemRandom().getrandbits(128)
-    app.config["JWT_SECRET_KEY"] = "mikej"
+    app.config["JWT_SECRET_KEY"] = str(secrets.SystemRandom().getrandbits(128))
+    # app.config["JWT_SECRET_KEY"] = "mikej"
     jwt = JWTManager(app)
 
     with app.app_context():
