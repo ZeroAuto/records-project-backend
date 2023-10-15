@@ -1,4 +1,5 @@
 from flask.views import MethodView
+from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
@@ -87,6 +88,7 @@ class RecordList(MethodView):
 
         return records
 
+    @jwt_required()
     @blp.arguments(RecordUpdateSchema)
     @blp.response(201, RecordDumpSchema)
     def post(cls, record_data):

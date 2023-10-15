@@ -35,7 +35,6 @@ def create_app(db_url=None):
     api = Api(app)
 
     app.config["JWT_SECRET_KEY"] = str(secrets.SystemRandom().getrandbits(128))
-    # app.config["JWT_SECRET_KEY"] = "mikej"
     jwt = JWTManager(app)
 
     with app.app_context():
