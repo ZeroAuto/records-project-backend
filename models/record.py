@@ -19,3 +19,4 @@ class RecordModel(db.Model):
     purchased = db.Column(db.Boolean, default=False)
     year = db.Column(db.Integer)
     format = db.Column(db.String)
+    db.UniqueConstraint(name, artist_id)
