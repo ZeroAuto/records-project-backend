@@ -10,6 +10,7 @@ from models import (
 )
 from schemas import (
     RecordDumpSchema,
+    RecordFindSchema,
     RecordUpdateSchema,
 )
 
@@ -28,6 +29,28 @@ def find_or_create_artist(artist_name):
 
 
 blp = Blueprint("Records", "records", description="Operations on records")
+
+
+@blp.route("/record/find")
+class FindRecordByNameAndArtist(MethodView):
+    @blp.arguments(RecordFindSchema)
+    @blp.response(200, RecordDumpSchema)
+    def get(cls, record_data):
+        record = db.session.query(
+            RecordModel.id,
+            RecordModel.name,
+            RecordModel.year,
+            RecordModel.format,
+            ArtistModel.name,
+        ).join(
+            ArtistModel,
+            ArtistModel.id == RecordModel.artist_id
+        ).filter(
+            RecordModel.name == record_data["name"],
+            ArtistModel.name == record_data["artist"]
+        ).first()
+
+        return record
 
 
 @blp.route("/record/<string:record_id>")

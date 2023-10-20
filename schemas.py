@@ -39,3 +39,8 @@ class LoginSchema(PlainUserSchema):
 class UserSchema(LoginSchema):
     email = fields.Str(required=True)
     name = fields.Str(required=True)
+
+
+class RecordFindSchema(Schema):
+    name = fields.Str(required=True)
+    artist = fields.Str(required=True)
