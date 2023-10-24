@@ -1,5 +1,5 @@
 from flask.views import MethodView
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
@@ -109,11 +109,12 @@ class Record(MethodView):
         return record
 
 
-@blp.route("/record/user/<string:user_id>")
+@blp.route("/record/user")
 class UserRecord(MethodView):
     @jwt_required()
     @blp.response(200, RecordDumpSchema(many=True))
-    def get(cls, user_id):
+    def get(cls):
+        user_id = get_jwt_identity()
         query = record_query().filter(
             RecordModel.users.any(id=user_id)
         ).all()
