@@ -28,6 +28,21 @@ def find_or_create_artist(artist_name):
     return artist
 
 
+def record_query():
+    records = db.session.query(
+        RecordModel.id,
+        RecordModel.name,
+        RecordModel.year,
+        RecordModel.format,
+        ArtistModel.name.label('artist_name'),
+    ).join(
+        ArtistModel,
+        ArtistModel.id == RecordModel.artist_id
+    )
+
+    return records
+
+
 blp = Blueprint("Records", "records", description="Operations on records")
 
 
@@ -94,22 +109,23 @@ class Record(MethodView):
         return record
 
 
+@blp.route("/record/user/<string:user_id>")
+class UserRecord(MethodView):
+    @jwt_required()
+    @blp.response(200, RecordDumpSchema(many=True))
+    def get(cls, user_id):
+        query = record_query().filter(
+            RecordModel.users.any(id=user_id)
+        ).all()
+
+        return query
+
+
 @blp.route("/record")
 class RecordList(MethodView):
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls):
-        records = db.session.query(
-            RecordModel.id,
-            RecordModel.name,
-            RecordModel.year,
-            RecordModel.format,
-            ArtistModel.name.label('artist_name'),
-        ).join(
-            ArtistModel,
-            ArtistModel.id == RecordModel.artist_id
-        )
-
-        return records
+        return record_query()
 
     @jwt_required()
     @blp.arguments(RecordUpdateSchema)

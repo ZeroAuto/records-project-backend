@@ -4,6 +4,7 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_jwt,
+    get_jwt_identity,
     jwt_required,
 )
 from passlib.hash import pbkdf2_sha256
@@ -38,6 +39,7 @@ class UserLogin(MethodView):
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "name": user.name,
+                "id": user.id,
             }, 200
 
         abort(401, message="Invalid credentials")
@@ -123,4 +125,4 @@ class TokenRefresh(MethodView):
         # Make it clear that when to add the refresh token to the blocklist will depend on the app design
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
-        return {"access_token": new_token}, 200
+        return {"access_token": new_token, "user": current_user.name}, 200
