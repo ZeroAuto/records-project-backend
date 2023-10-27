@@ -12,6 +12,7 @@ from schemas import (
     RecordDumpSchema,
     RecordFindSchema,
     RecordUpdateSchema,
+    SearchTextSchema,
 )
 
 
@@ -48,7 +49,7 @@ blp = Blueprint("Records", "records", description="Operations on records")
 
 @blp.route("/record/find")
 class FindRecordByNameAndArtist(MethodView):
-    @blp.arguments(RecordFindSchema)
+    @blp.arguments(RecordFindSchema, location="query")
     @blp.response(200, RecordDumpSchema)
     def get(cls, record_data):
         record = db.session.query(
@@ -124,9 +125,13 @@ class UserRecord(MethodView):
 
 @blp.route("/record")
 class RecordList(MethodView):
+    @blp.arguments(SearchTextSchema, location="query")
     @blp.response(200, RecordDumpSchema(many=True))
-    def get(cls):
-        return record_query()
+    def get(cls, data):
+        print("text length: " + str(len(data["text"])))
+        query = record_query()
+
+        return query
 
     @jwt_required()
     @blp.arguments(RecordUpdateSchema)

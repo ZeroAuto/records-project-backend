@@ -44,3 +44,7 @@ class UserSchema(LoginSchema):
 class RecordFindSchema(Schema):
     name = fields.Str(required=True)
     artist = fields.Str(required=True)
+
+
+class SearchTextSchema(Schema):
+    text = fields.Str()
