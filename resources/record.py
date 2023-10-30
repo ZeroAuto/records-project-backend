@@ -122,10 +122,11 @@ class Record(MethodView):
 @blp.route("/record/user")
 class UserRecord(MethodView):
     @jwt_required()
+    @blp.arguments(SearchTextSchema, location="query")
     @blp.response(200, RecordDumpSchema(many=True))
-    def get(cls):
+    def get(cls, data):
         user_id = get_jwt_identity()
-        query = record_query().filter(
+        query = record_query(data["text"]).filter(
             RecordModel.users.any(id=user_id)
         ).all()
 
