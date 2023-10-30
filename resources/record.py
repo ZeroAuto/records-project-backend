@@ -1,6 +1,7 @@
 from flask.views import MethodView
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
+from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from db import db
@@ -29,7 +30,7 @@ def find_or_create_artist(artist_name):
     return artist
 
 
-def record_query():
+def record_query(search_text):
     records = db.session.query(
         RecordModel.id,
         RecordModel.name,
@@ -40,6 +41,14 @@ def record_query():
         ArtistModel,
         ArtistModel.id == RecordModel.artist_id
     )
+
+    if len(search_text) > 0:
+        records = records.filter(
+            or_(
+                RecordModel.name.ilike(f"%{search_text}%"),
+                ArtistModel.name.ilike(f"%{search_text}%")
+            )
+        )
 
     return records
 
@@ -129,7 +138,7 @@ class RecordList(MethodView):
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls, data):
         print("text length: " + str(len(data["text"])))
-        query = record_query()
+        query = record_query(data["text"])
 
         return query
 
