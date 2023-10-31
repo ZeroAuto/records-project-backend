@@ -48,3 +48,8 @@ class RecordFindSchema(Schema):
 
 class SearchTextSchema(Schema):
     text = fields.Str()
+
+
+class AddRecordSchema(Schema):
+    record_id = fields.Int(required=True)
+    artist_id = fields.Int(required=True)

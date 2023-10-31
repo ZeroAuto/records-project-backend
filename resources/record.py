@@ -8,8 +8,10 @@ from db import db
 from models import (
     ArtistModel,
     RecordModel,
+    UserRecords,
 )
 from schemas import (
+    AddRecordSchema,
     RecordDumpSchema,
     RecordFindSchema,
     RecordUpdateSchema,
@@ -54,6 +56,21 @@ def record_query(search_text):
 
 
 blp = Blueprint("Records", "records", description="Operations on records")
+
+
+@blp.route("/record/add/<string:record_id>")
+class AddRecord(MethodView):
+    @jwt_required()
+    @blp.arguments(AddRecordSchema)
+    @blp.response(200, RecordDumpSchema)
+    def post(cls, record_id):
+        user_id = get_jwt_identity()
+        user_record = UserRecords(
+            record_id=record_id,
+            user_id=user_id,
+        )
+        db.session.add(user_record)
+        db.session.commit()
 
 
 @blp.route("/record/find")
@@ -149,14 +166,20 @@ class RecordList(MethodView):
     def post(cls, record_data):
         artist = find_or_create_artist(record_data["artist"])
         artist_id = artist.id
+        user_id = get_jwt_identity()
         record = RecordModel(
             name=record_data["name"],
             artist_id=artist_id,
             year=record_data["year"],
             format=record_data["format"]
         )
+        user_record = UserRecords(
+            record_id=record.id,
+            user_id=user_id,
+        )
         try:
             db.session.add(record)
+            db.session.add(user_record)
             db.session.commit()
         except IntegrityError:
             abort(
