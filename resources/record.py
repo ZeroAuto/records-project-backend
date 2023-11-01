@@ -164,22 +164,22 @@ class RecordList(MethodView):
     def post(cls, record_data):
         artist = find_or_create_artist(record_data["artist"])
         artist_id = artist.id
-        # user_id = get_jwt_identity()
         record = RecordModel(
             name=record_data["name"],
             artist_id=artist_id,
             year=record_data["year"],
             format=record_data["format"]
         )
-        # user_record = UserRecords(
-        #     record_id=record.id,
-        #     user_id=user_id,
-        # )
         try:
             db.session.add(record)
-            # print(str(record["id"]))
-            print("record id: " + str(record.id))
-            # db.session.add(user_record)
+            db.session.flush()
+            db.session.refresh(record)
+            user_id = get_jwt_identity()
+            user_record = UserRecords(
+                record_id=record.id,
+                user_id=user_id,
+            )
+            db.session.add(user_record)
             db.session.commit()
         except IntegrityError:
             abort(
