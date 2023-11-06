@@ -12,7 +12,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
 from models import UserModel, UserRecords
-# from schemas import LoginSchema, UserRecordSchema, UserSchema
 from schemas import (
     LoginSchema,
     UserRecordSchema,
@@ -120,9 +119,18 @@ class User(MethodView):
 class TokenRefresh(MethodView):
     @jwt_required(refresh=True)
     def post(self):
-        current_user = get_jwt_identity()
-        new_token = create_access_token(identity=current_user, fresh=False)
+        user_id = get_jwt_identity()
+        user = UserModel.query.filter(
+            UserModel.id == user_id,
+        ).first()
+        new_token = create_access_token(identity=user.id, fresh=False)
+        new_refresh_token = create_refresh_token(user.id)
         # Make it clear that when to add the refresh token to the blocklist will depend on the app design
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
-        return {"access_token": new_token, "user": current_user.name}, 200
+        return {
+            "access_token": new_token,
+            "refresh_token": new_refresh_token,
+            "name": user.name,
+            "id": user.id,
+        }, 200
