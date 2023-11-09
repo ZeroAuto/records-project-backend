@@ -153,7 +153,6 @@ class RecordList(MethodView):
     @blp.arguments(SearchTextSchema, location="query")
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls, data):
-        print("text length: " + str(len(data["text"])))
         query = record_query(data["text"])
 
         return query
