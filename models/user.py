@@ -1,4 +1,6 @@
 from db import db
+from sqlalchemy.sql import false
+
 
 class UserModel(db.Model):
     __tablename__ = "users"
@@ -8,4 +10,6 @@ class UserModel(db.Model):
     username = db.Column(db.String(80), nullable=False, unique=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
-    records = db.relationship("RecordModel", back_populates="users", secondary="users_records")
+    admin = db.Column(db.Boolean, server_default=false(), nullable=False)
+    records = db.relationship(
+        "RecordModel", back_populates="users", secondary="users_records")
