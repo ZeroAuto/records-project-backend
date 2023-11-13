@@ -11,7 +11,7 @@ from passlib.hash import pbkdf2_sha256
 from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
-from models import UserModel, UserRecords
+from models import UserModel, UserRecordModel
 from schemas import (
     LoginSchema,
     UserRecordSchema,
@@ -77,10 +77,10 @@ class LinkUserToRecord(MethodView):
     @blp.arguments(UserRecordSchema)
     @blp.response(201, UserRecordSchema)
     def post(self, user_id, record_id):
-        if UserRecords.query.filter(UserRecords.record_id == record_id, UserRecords.user_id == user_id):
+        if UserRecordModel.query.filter(UserRecordModel.record_id == record_id, UserRecordModel.user_id == user_id):
             abort(400, message="User has already added this record")
 
-        user_record = UserRecords(user_id=user_id, record_id=record_id)
+        user_record = UserRecordModel(user_id=user_id, record_id=record_id)
 
         try:
             db.session.add(user_record)

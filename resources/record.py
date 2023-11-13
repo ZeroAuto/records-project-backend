@@ -8,7 +8,7 @@ from db import db
 from models import (
     ArtistModel,
     RecordModel,
-    UserRecords,
+    UserRecordModel,
 )
 from schemas import (
     RecordDumpSchema,
@@ -63,7 +63,7 @@ class AddRecord(MethodView):
     @blp.response(200, RecordDumpSchema)
     def post(cls, record_id):
         user_id = get_jwt_identity()
-        user_record = UserRecords(
+        user_record = UserRecordModel(
             record_id=record_id,
             user_id=user_id,
         )
@@ -174,7 +174,7 @@ class RecordList(MethodView):
             db.session.flush()
             db.session.refresh(record)
             user_id = get_jwt_identity()
-            user_record = UserRecords(
+            user_record = UserRecordModel(
                 record_id=record.id,
                 user_id=user_id,
             )
