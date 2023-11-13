@@ -8,7 +8,7 @@ from flask_jwt_extended import (
     jwt_required,
 )
 from passlib.hash import pbkdf2_sha256
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from db import db
 from models import UserModel, UserRecordModel
@@ -57,10 +57,36 @@ class UserSignup(MethodView):
             email=user_data["email"],
             password=pbkdf2_sha256.hash(user_data["password"]),
         )
-        db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.add(user)
+            db.session.flush()
+            db.session.refresh(user)
+            db.session.commit()
+        except IntegrityError:
+            abort(
+                400,
+                message="An IntegrityError error occurred",
+            )
+        except SQLAlchemyError:
+            abort(
+                500,
+                message="An error occurred during user creation"
+            )
+        finally:
+            if user:
+                access_token = create_access_token(
+                    identity=user.id, fresh=True)
+                refresh_token = create_refresh_token(user.id)
+                return {
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                    "name": user.name,
+                    "id": user.id,
+                }, 200
 
-        return {"message": "User"}
+        abort(500, message="Something Went Wrong")
+
+        # return {"message": "User"}
 
 
 @blp.route("/logout")
