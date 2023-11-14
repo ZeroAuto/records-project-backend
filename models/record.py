@@ -16,7 +16,6 @@ class RecordModel(db.Model):
     users = db.relationship(
         "UserModel", back_populates="records", secondary="users_records")
     description = db.Column(db.String(255))
-    purchased = db.Column(db.Boolean, default=False)
     year = db.Column(db.Integer)
     format = db.Column(db.String)
     db.UniqueConstraint(name, artist_id)
