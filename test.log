@@ -1,0 +1,334 @@
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 803-544-911
+SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id
+127.0.0.1 - - [25/Jan/2024 17:22:04] "GET /record?text= HTTP/1.1" 200 -
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id
+127.0.0.1 - - [25/Jan/2024 17:22:28] "GET /record?text= HTTP/1.1" 200 -
+SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id
+127.0.0.1 - - [25/Jan/2024 17:22:30] "GET /record?text= HTTP/1.1" 200 -
+SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id WHERE (r.name ilike '%:search_text%' or a.name ilike '%:search_text%')
+127.0.0.1 - - [25/Jan/2024 17:22:31] "[35m[1mGET /record?text=tet HTTP/1.1[0m" 500 -
+Error on request:
+Traceback (most recent call last):
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1810, in _execute_context
+    context = constructor(
+              ^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1376, in _init_compiled
+    self.compiled_parameters = [
+                               ^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1377, in <listcomp>
+    compiled.construct_params(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/compiler.py", line 1942, in construct_params
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.InvalidRequestError: A value is required for bind parameter 'search_text' (Background on this error at: https://sqlalche.me/e/20/cd3x)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/werkzeug/serving.py", line 364, in run_wsgi
+    execute(self.server.app)
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/werkzeug/serving.py", line 325, in execute
+    application_iter = app(environ, start_response)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2213, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2193, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2190, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1486, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/views.py", line 109, in view
+    return current_app.ensure_sync(self.dispatch_request)(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/views.py", line 190, in dispatch_request
+    return current_app.ensure_sync(meth)(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/webargs/core.py", line 649, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_smorest/arguments.py", line 82, in wrapper
+    return func(*f_args, **f_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_smorest/response.py", line 89, in wrapper
+    func(*args, **kwargs)
+  File "/Users/mikejames/code/udemy/records-api-flask/resources/record.py", line 171, in get
+    query = record_query(data["text"])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/resources/record.py", line 68, in record_query
+    records = db.session.execute(text(query))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/scoping.py", line 738, in execute
+    return self._proxied.execute(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2262, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2153, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1412, in execute
+    return meth(
+           ^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 516, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1635, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1816, in _execute_context
+    self._handle_dbapi_exception(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2339, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1810, in _execute_context
+    context = constructor(
+              ^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1376, in _init_compiled
+    self.compiled_parameters = [
+                               ^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1377, in <listcomp>
+    compiled.construct_params(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/compiler.py", line 1942, in construct_params
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.StatementError: (sqlalchemy.exc.InvalidRequestError) A value is required for bind parameter 'search_text'
+[SQL: SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id WHERE (r.name ilike '%%%(search_text)s%%' or a.name ilike '%%%(search_text)s%%')]
+[parameters: [{}]]
+(Background on this error at: https://sqlalche.me/e/20/cd3x)
+SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id
+127.0.0.1 - - [25/Jan/2024 17:22:36] "GET /record?text= HTTP/1.1" 200 -
+SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id WHERE (r.name ilike '%:search_text%' or a.name ilike '%:search_text%')
+127.0.0.1 - - [25/Jan/2024 17:22:38] "[35m[1mGET /record?text=tele HTTP/1.1[0m" 500 -
+Error on request:
+Traceback (most recent call last):
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1810, in _execute_context
+    context = constructor(
+              ^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1376, in _init_compiled
+    self.compiled_parameters = [
+                               ^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1377, in <listcomp>
+    compiled.construct_params(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/compiler.py", line 1942, in construct_params
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.InvalidRequestError: A value is required for bind parameter 'search_text' (Background on this error at: https://sqlalche.me/e/20/cd3x)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/werkzeug/serving.py", line 364, in run_wsgi
+    execute(self.server.app)
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/werkzeug/serving.py", line 325, in execute
+    application_iter = app(environ, start_response)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2213, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2193, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2190, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1486, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/views.py", line 109, in view
+    return current_app.ensure_sync(self.dispatch_request)(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/views.py", line 190, in dispatch_request
+    return current_app.ensure_sync(meth)(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/webargs/core.py", line 649, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_smorest/arguments.py", line 82, in wrapper
+    return func(*f_args, **f_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_smorest/response.py", line 89, in wrapper
+    func(*args, **kwargs)
+  File "/Users/mikejames/code/udemy/records-api-flask/resources/record.py", line 171, in get
+    query = record_query(data["text"])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/resources/record.py", line 68, in record_query
+    records = db.session.execute(text(query))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/scoping.py", line 738, in execute
+    return self._proxied.execute(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2262, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2153, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1412, in execute
+    return meth(
+           ^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 516, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1635, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1816, in _execute_context
+    self._handle_dbapi_exception(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2339, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1810, in _execute_context
+    context = constructor(
+              ^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1376, in _init_compiled
+    self.compiled_parameters = [
+                               ^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1377, in <listcomp>
+    compiled.construct_params(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/compiler.py", line 1942, in construct_params
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.StatementError: (sqlalchemy.exc.InvalidRequestError) A value is required for bind parameter 'search_text'
+[SQL: SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id WHERE (r.name ilike '%%%(search_text)s%%' or a.name ilike '%%%(search_text)s%%')]
+[parameters: [{}]]
+(Background on this error at: https://sqlalche.me/e/20/cd3x)
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id
+127.0.0.1 - - [25/Jan/2024 17:23:07] "GET /record?text= HTTP/1.1" 200 -
+SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id WHERE (r.name ilike '%:search_text%' or a.name ilike '%:search_text%')
+127.0.0.1 - - [25/Jan/2024 17:23:10] "[35m[1mGET /record?text=tele HTTP/1.1[0m" 500 -
+Error on request:
+Traceback (most recent call last):
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1810, in _execute_context
+    context = constructor(
+              ^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1376, in _init_compiled
+    self.compiled_parameters = [
+                               ^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1377, in <listcomp>
+    compiled.construct_params(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/compiler.py", line 1942, in construct_params
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.InvalidRequestError: A value is required for bind parameter 'search_text' (Background on this error at: https://sqlalche.me/e/20/cd3x)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/werkzeug/serving.py", line 364, in run_wsgi
+    execute(self.server.app)
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/werkzeug/serving.py", line 325, in execute
+    application_iter = app(environ, start_response)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2213, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2193, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 2190, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1486, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/views.py", line 109, in view
+    return current_app.ensure_sync(self.dispatch_request)(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask/views.py", line 190, in dispatch_request
+    return current_app.ensure_sync(meth)(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/webargs/core.py", line 649, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_smorest/arguments.py", line 82, in wrapper
+    return func(*f_args, **f_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/flask_smorest/response.py", line 89, in wrapper
+    func(*args, **kwargs)
+  File "/Users/mikejames/code/udemy/records-api-flask/resources/record.py", line 171, in get
+    query = record_query(data["text"])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/resources/record.py", line 68, in record_query
+    records = db.session.execute(text(query))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/scoping.py", line 738, in execute
+    return self._proxied.execute(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2262, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2153, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1412, in execute
+    return meth(
+           ^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 516, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1635, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1816, in _execute_context
+    self._handle_dbapi_exception(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2339, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1810, in _execute_context
+    context = constructor(
+              ^^^^^^^^^^^^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1376, in _init_compiled
+    self.compiled_parameters = [
+                               ^
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 1377, in <listcomp>
+    compiled.construct_params(
+  File "/Users/mikejames/code/udemy/records-api-flask/.venv/lib/python3.11/site-packages/sqlalchemy/sql/compiler.py", line 1942, in construct_params
+    raise exc.InvalidRequestError(
+sqlalchemy.exc.StatementError: (sqlalchemy.exc.InvalidRequestError) A value is required for bind parameter 'search_text'
+[SQL: SELECT r.id, r.name, r.year, r.format, a.name as artist_name FROM records as r JOIN artists as a on r.artist_id = a.id WHERE (r.name ilike '%%%(search_text)s%%' or a.name ilike '%%%(search_text)s%%')]
+[parameters: [{}]]
+(Background on this error at: https://sqlalche.me/e/20/cd3x)

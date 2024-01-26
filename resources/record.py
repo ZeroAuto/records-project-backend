@@ -1,7 +1,8 @@
 from flask.views import MethodView
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
-from sqlalchemy import or_
+from sqlalchemy import text
+# from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from db import db
@@ -31,26 +32,31 @@ def find_or_create_artist(artist_name):
     return artist
 
 
-def record_query(search_text):
-    records = db.session.query(
-        RecordModel.id,
-        RecordModel.name,
-        RecordModel.year,
-        RecordModel.format,
-        ArtistModel.name.label('artist_name'),
-    ).join(
-        ArtistModel,
-        ArtistModel.id == RecordModel.artist_id
-    )
+def record_query(search_text="", user_id=None):
+    select_sql = "SELECT r.id, r.name, r.year, r.format, a.name as artist_name"
+    from_sql = "FROM records as r"
+    join_terms = ["JOIN artists as a on r.artist_id = a.id"]
+    params = {}
+    where_terms = []
 
     if len(search_text) > 0:
-        records = records.filter(
-            or_(
-                RecordModel.name.ilike(f"%{search_text}%"),
-                ArtistModel.name.ilike(f"%{search_text}%")
-            )
-        )
+        search_term = f"%{search_text}%"
+        params["search_text"] = search_term
+        where_sql = "(r.name ilike :search_text or a.name ilike :search_text)"
+        where_terms.append(where_sql)
 
+    if user_id:
+        join_terms.append("JOIN users_records as ur on r.id = ur.record_id")
+        join_terms.append("JOIN users as u on ur.user_id = u.id")
+        params["user_id"] = int(user_id)
+        where_terms.append("u.id = :user_id")
+
+    query = select_sql + " " + from_sql + " " + " ".join(join_terms)
+
+    if len(search_text) > 0 or user_id:
+        query = query + " WHERE " + " AND ".join(where_terms)
+
+    records = db.session.execute(text(query), params)
     return records
 
 
@@ -141,9 +147,10 @@ class UserRecord(MethodView):
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls, data):
         user_id = get_jwt_identity()
-        query = record_query(data["text"]).filter(
-            RecordModel.users.any(id=user_id)
-        ).all()
+        query = record_query(search_text=data["text"], user_id=user_id)
+        # query = record_query(data["text"]).filter(
+        #     RecordModel.users.any(id=user_id)
+        # ).all()
 
         return query
 
@@ -153,7 +160,7 @@ class RecordList(MethodView):
     @blp.arguments(SearchTextSchema, location="query")
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls, data):
-        query = record_query(data["text"])
+        query = record_query(search_text=data["text"])
 
         return query
 
