@@ -32,7 +32,7 @@ def find_or_create_artist(artist_name):
     return artist
 
 
-def record_query(search_text="", user_id=None):
+def record_query(search_text="", user_id=None, purchased=None):
     select_sql = "SELECT r.id, r.name, r.year, r.format, a.name as artist_name"
     from_sql = "FROM records as r"
     join_terms = ["JOIN artists as a on r.artist_id = a.id"]
@@ -50,6 +50,10 @@ def record_query(search_text="", user_id=None):
         join_terms.append("JOIN users as u on ur.user_id = u.id")
         params["user_id"] = int(user_id)
         where_terms.append("u.id = :user_id")
+
+        if purchased is not None:
+            params["purchased"] = purchased
+            where_terms.append("ur.purchased = :purchased")
 
     query = select_sql + " " + from_sql + " " + " ".join(join_terms)
 
@@ -147,10 +151,10 @@ class UserRecord(MethodView):
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls, data):
         user_id = get_jwt_identity()
-        query = record_query(search_text=data["text"], user_id=user_id)
-        # query = record_query(data["text"]).filter(
-        #     RecordModel.users.any(id=user_id)
-        # ).all()
+        query = record_query(
+            search_text=data["text"],
+            user_id=user_id,
+        )
 
         return query
 
