@@ -40,10 +40,20 @@ def record_query(search_text="", user_id=None, purchased=None):
     where_terms = []
 
     if len(search_text) > 0:
-        search_term = f"%{search_text}%"
-        params["search_text"] = search_term
-        where_sql = "(r.name ilike :search_text or a.name ilike :search_text)"
-        where_terms.append(where_sql)
+        search_terms = search_text.split()
+        for idx, term in enumerate(search_terms):
+            param = f"search_term_{idx}"
+            params[param] = f"%{term}%"
+            # where_terms.append(
+            #     f"(r.name ilike :{param} or a.name ilike :{param})"
+            # )
+            where_terms.append(
+                f"""
+                    (r.name ilike :{param}
+                    or
+                    a.name ilike :{param})
+                """
+            )
 
     if user_id:
         join_terms.append("JOIN users_records as ur on r.id = ur.record_id")

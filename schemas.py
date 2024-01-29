@@ -48,3 +48,4 @@ class RecordFindSchema(Schema):
 
 class SearchTextSchema(Schema):
     text = fields.Str()
+    purchased = fields.Bool()
