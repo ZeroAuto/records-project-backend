@@ -44,9 +44,6 @@ def record_query(search_text="", user_id=None, purchased=None):
         for idx, term in enumerate(search_terms):
             param = f"search_term_{idx}"
             params[param] = f"%{term}%"
-            # where_terms.append(
-            #     f"(r.name ilike :{param} or a.name ilike :{param})"
-            # )
             where_terms.append(
                 f"""
                     (r.name ilike :{param}
