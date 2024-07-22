@@ -11,6 +11,7 @@ class PlainRecordSchema(Schema):
     name = fields.Str(required=True)
     year = fields.Int()
     format = fields.Str()
+    artist_id = fields.Int()
 
 
 class UserRecordSchema(Schema):
@@ -47,5 +48,7 @@ class RecordFindSchema(Schema):
 
 
 class SearchTextSchema(Schema):
-    text = fields.Str()
+    searchText = fields.Str()
+    sortColumn = fields.Str()
+    sortDirection = fields.Str()
     purchased = fields.Bool()

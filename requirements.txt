@@ -9,3 +9,5 @@ flask-jwt-extended
 passlib
 flask-migrate
 flask-cors
+pytest
+pytest-flask

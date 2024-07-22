@@ -32,7 +32,7 @@ def find_or_create_artist(artist_name):
     return artist
 
 
-def record_query(search_text="", user_id=None, purchased=None):
+def record_query(search_text="", user_id=None, purchased=None, sort_column="name", sort_direction="asc"):
     select_sql = "SELECT r.id, r.name, r.year, r.format, a.name as artist_name"
     from_sql = "FROM records as r"
     join_terms = ["JOIN artists as a on r.artist_id = a.id"]
@@ -53,8 +53,13 @@ def record_query(search_text="", user_id=None, purchased=None):
             )
 
     if user_id:
-        join_terms.append("JOIN users_records as ur on r.id = ur.record_id")
-        join_terms.append("JOIN users as u on ur.user_id = u.id")
+        join_type = "JOIN"
+        # if purchased is not None:
+        #     join_type = "JOIN"
+        # else:
+        #     join_type = "LEFT JOIN"
+        join_terms.append(f"{join_type} users_records as ur on r.id = ur.record_id")
+        join_terms.append(f"{join_type} users as u on ur.user_id = u.id")
         params["user_id"] = int(user_id)
         where_terms.append("u.id = :user_id")
 
@@ -66,6 +71,15 @@ def record_query(search_text="", user_id=None, purchased=None):
 
     if len(search_text) > 0 or user_id:
         query = query + " WHERE " + " AND ".join(where_terms)
+
+    sort_columns = {
+        "name": "r.name",
+        "artist": "a.name",
+        "format": "r.format",
+        "year": "r.year"
+    }
+
+    query += f" ORDER BY {sort_columns[sort_column]} {sort_direction}"
 
     records = db.session.execute(text(query), params)
     return records
@@ -98,7 +112,7 @@ class FindRecordByNameAndArtist(MethodView):
             RecordModel.name,
             RecordModel.year,
             RecordModel.format,
-            ArtistModel.name,
+            ArtistModel.name.label('artist_name'),
         ).join(
             ArtistModel,
             ArtistModel.id == RecordModel.artist_id
@@ -159,8 +173,10 @@ class UserRecord(MethodView):
     def get(cls, data):
         user_id = get_jwt_identity()
         query = record_query(
-            search_text=data["text"],
+            search_text=data["searchText"],
             user_id=user_id,
+            sort_column=data["sortColumn"],
+            sort_direction=data["sortDirection"]
         )
 
         return query
@@ -171,7 +187,11 @@ class RecordList(MethodView):
     @blp.arguments(SearchTextSchema, location="query")
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls, data):
-        query = record_query(search_text=data["text"])
+        query = record_query(
+            search_text=data["searchText"],
+            sort_column=data["sortColumn"],
+            sort_direction=data["sortDirection"]
+        )
 
         return query
 
