@@ -48,7 +48,8 @@ class RecordFindSchema(Schema):
 
 
 class SearchTextSchema(Schema):
-    searchText = fields.Str()
+    searchTerm = fields.Str()
     sortColumn = fields.Str()
     sortDirection = fields.Str()
     purchased = fields.Bool()
+    offset = fields.Int()

@@ -29,6 +29,7 @@ def create_app(db_url=None):
     CORS(
         app,
         origins=[os.getenv("FRONTEND_URL", "http://localhost:3000")],
+        expose_headers=["X-Total-Count"],
     )
     db.init_app(app)
     migrate = Migrate(app, db)

@@ -1,8 +1,8 @@
+from flask import jsonify, make_response
 from flask.views import MethodView
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 from sqlalchemy import text
-# from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from db import db
@@ -32,8 +32,17 @@ def find_or_create_artist(artist_name):
     return artist
 
 
-def record_query(search_text="", user_id=None, purchased=None, sort_column="name", sort_direction="asc"):
+def record_query(
+        search_text="",
+        user_id=None,
+        purchased=None,
+        sort_column="name",
+        sort_direction="asc",
+        limit=15,
+        offset=0,
+    ):
     select_sql = "SELECT r.id, r.name, r.year, r.format, a.name as artist_name"
+    count_sql = "SELECT COUNT(*)"
     from_sql = "FROM records as r"
     join_terms = ["JOIN artists as a on r.artist_id = a.id"]
     params = {}
@@ -55,8 +64,6 @@ def record_query(search_text="", user_id=None, purchased=None, sort_column="name
     if user_id:
         join_type = "JOIN"
         # if purchased is not None:
-        #     join_type = "JOIN"
-        # else:
         #     join_type = "LEFT JOIN"
         join_terms.append(f"{join_type} users_records as ur on r.id = ur.record_id")
         join_terms.append(f"{join_type} users as u on ur.user_id = u.id")
@@ -67,10 +74,13 @@ def record_query(search_text="", user_id=None, purchased=None, sort_column="name
             params["purchased"] = purchased
             where_terms.append("ur.purchased = :purchased")
 
-    query = select_sql + " " + from_sql + " " + " ".join(join_terms)
+    query_base = from_sql + " " + " ".join(join_terms)
 
     if len(search_text) > 0 or user_id:
-        query = query + " WHERE " + " AND ".join(where_terms)
+        query_base += " WHERE " + " AND ".join(where_terms)
+
+    query = select_sql + " " + query_base
+    count_query = count_sql + " " + query_base
 
     sort_columns = {
         "name": "r.name",
@@ -80,9 +90,17 @@ def record_query(search_text="", user_id=None, purchased=None, sort_column="name
     }
 
     query += f" ORDER BY {sort_columns[sort_column]} {sort_direction}"
+    query += f" LIMIT :limit OFFSET :offset"
+    params["limit"] = limit
+    params["offset"] = offset
 
-    records = db.session.execute(text(query), params)
-    return records
+    records = db.session.execute(text(query), params).fetchall()
+    total_count = db.session.execute(text(count_query), params).scalar()
+
+    # Convert Row objects to dictionaries
+    record_dicts = [dict(row._mapping) for row in records]
+
+    return record_dicts, total_count
 
 
 blp = Blueprint("Records", "records", description="Operations on records")
@@ -164,7 +182,6 @@ class Record(MethodView):
 
         return record
 
-
 @blp.route("/record/user")
 class UserRecord(MethodView):
     @jwt_required()
@@ -172,28 +189,33 @@ class UserRecord(MethodView):
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls, data):
         user_id = get_jwt_identity()
-        query = record_query(
-            search_text=data["searchText"],
+        records, total_count = record_query(
+            search_text=data["searchTerm"],
             user_id=user_id,
             sort_column=data["sortColumn"],
-            sort_direction=data["sortDirection"]
+            sort_direction=data["sortDirection"],
+            offset=data["offset"],
         )
 
-        return query
-
+        response = make_response(jsonify(records))
+        response.headers["X-Total-Count"] = total_count
+        return response
 
 @blp.route("/record")
 class RecordList(MethodView):
     @blp.arguments(SearchTextSchema, location="query")
     @blp.response(200, RecordDumpSchema(many=True))
     def get(cls, data):
-        query = record_query(
-            search_text=data["searchText"],
+        records, total_count = record_query(
+            search_text=data["searchTerm"],
             sort_column=data["sortColumn"],
-            sort_direction=data["sortDirection"]
+            sort_direction=data["sortDirection"],
+            offset=data["offset"],
         )
 
-        return query
+        response = make_response(jsonify(records))
+        response.headers["X-Total-Count"] = total_count
+        return response
 
     @jwt_required()
     @blp.arguments(RecordUpdateSchema)
