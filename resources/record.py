@@ -12,8 +12,10 @@ from models import (
     UserRecordModel,
 )
 from schemas import (
+    AddUserRecordSchema,
     RecordDumpSchema,
     RecordFindSchema,
+    RecordFindDumpSchema,
     RecordUpdateSchema,
     SearchTextSchema,
 )
@@ -97,7 +99,6 @@ def record_query(
     records = db.session.execute(text(query), params).fetchall()
     total_count = db.session.execute(text(count_query), params).scalar()
 
-    # Convert Row objects to dictionaries
     record_dicts = [dict(row._mapping) for row in records]
 
     return record_dicts, total_count
@@ -109,12 +110,14 @@ blp = Blueprint("Records", "records", description="Operations on records")
 @blp.route("/record/add/<string:record_id>")
 class AddRecord(MethodView):
     @jwt_required()
-    @blp.response(200, RecordDumpSchema)
+    @blp.arguments(AddUserRecordSchema)
+    @blp.response(200, AddUserRecordSchema)
     def post(cls, record_id):
         user_id = get_jwt_identity()
         user_record = UserRecordModel(
             record_id=record_id,
             user_id=user_id,
+            purchased=data['purchased']
         )
         db.session.add(user_record)
         db.session.commit()
@@ -122,9 +125,11 @@ class AddRecord(MethodView):
 
 @blp.route("/record/find")
 class FindRecordByNameAndArtist(MethodView):
+    @jwt_required()
     @blp.arguments(RecordFindSchema, location="query")
-    @blp.response(200, RecordDumpSchema)
+    @blp.response(200, RecordFindDumpSchema)
     def get(cls, record_data):
+        user_id = get_jwt_identity()
         record = db.session.query(
             RecordModel.id,
             RecordModel.name,
@@ -138,6 +143,19 @@ class FindRecordByNameAndArtist(MethodView):
             RecordModel.name == record_data["name"],
             ArtistModel.name == record_data["artist"]
         ).first()
+
+        if record:
+            # Check if the record is associated with the current user
+            association_exists = db.session.query(
+                db.exists().where(
+                    UserRecordModel.user_id == user_id,
+                    UserRecordModel.record_id == record.id
+                )
+            ).scalar()
+
+            record_dict = record._asdict()  # Convert SQLAlchemy row object to dictionary
+            record_dict['owned_by_user'] = association_exists
+            return record_dict
 
         return record
 

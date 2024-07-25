@@ -28,6 +28,10 @@ class RecordDumpSchema(PlainRecordSchema):
     artist_name = fields.Str(dump_only=True)
 
 
+class RecordFindDumpSchema(RecordDumpSchema):
+    owned_by_user = fields.Boolean(dump_only=True)
+
+
 class PlainUserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str(required=True)
@@ -53,3 +57,7 @@ class SearchTextSchema(Schema):
     sortDirection = fields.Str()
     purchased = fields.Bool()
     offset = fields.Int()
+
+
+class AddUserRecordSchema(Schema):
+    purchased = fields.Boolean(missing=False)
