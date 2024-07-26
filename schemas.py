@@ -22,6 +22,7 @@ class UserRecordSchema(Schema):
 
 class RecordUpdateSchema(PlainRecordSchema):
     artist = fields.Str()
+    purchased = fields.Boolean(missing=False)
 
 
 class RecordDumpSchema(PlainRecordSchema):
@@ -55,7 +56,7 @@ class SearchTextSchema(Schema):
     searchTerm = fields.Str()
     sortColumn = fields.Str()
     sortDirection = fields.Str()
-    purchased = fields.Bool()
+    purchased = fields.Boolean(missing=None)
     offset = fields.Int()
 
 

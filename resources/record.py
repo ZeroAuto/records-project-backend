@@ -64,25 +64,28 @@ def record_query(
             )
 
     if user_id:
-        join_type = "JOIN"
-        # if purchased is not None:
-        #     join_type = "LEFT JOIN"
+        join_type = "LEFT JOIN"
+        select_sql += ", ur.purchased"
+
+        if purchased is not None:
+            join_type = "JOIN"
+            params["purchased"] = purchased
+            where_terms.append("u.id = :user_id")
+            where_terms.append("ur.purchased = :purchased")
+
+        print(join_type)
         join_terms.append(f"{join_type} users_records as ur on r.id = ur.record_id")
         join_terms.append(f"{join_type} users as u on ur.user_id = u.id")
         params["user_id"] = int(user_id)
-        where_terms.append("u.id = :user_id")
-
-        if purchased is not None:
-            params["purchased"] = purchased
-            where_terms.append("ur.purchased = :purchased")
 
     query_base = from_sql + " " + " ".join(join_terms)
 
-    if len(search_text) > 0 or user_id:
+    if len(search_text) > 0 or user_id and len(where_terms) > 0:
         query_base += " WHERE " + " AND ".join(where_terms)
 
     query = select_sql + " " + query_base
     count_query = count_sql + " " + query_base
+    print(query)
 
     sort_columns = {
         "name": "r.name",
@@ -213,6 +216,7 @@ class UserRecord(MethodView):
             sort_column=data["sortColumn"],
             sort_direction=data["sortDirection"],
             offset=data["offset"],
+            purchased=data["purchased"],
         )
 
         response = make_response(jsonify(records))
@@ -255,6 +259,7 @@ class RecordList(MethodView):
             user_record = UserRecordModel(
                 record_id=record.id,
                 user_id=user_id,
+                purchased=record_data["purchased"]
             )
             db.session.add(user_record)
             db.session.commit()
