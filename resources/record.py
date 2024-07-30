@@ -40,7 +40,7 @@ def record_query(
         purchased=None,
         sort_column="name",
         sort_direction="asc",
-        limit=15,
+        limit=20,
         offset=0,
     ):
     select_sql = "SELECT r.id, r.name, r.year, r.format, a.name as artist_name"
@@ -73,7 +73,6 @@ def record_query(
             where_terms.append("u.id = :user_id")
             where_terms.append("ur.purchased = :purchased")
 
-        print(join_type)
         join_terms.append(f"{join_type} users_records as ur on r.id = ur.record_id")
         join_terms.append(f"{join_type} users as u on ur.user_id = u.id")
         params["user_id"] = int(user_id)
@@ -85,7 +84,6 @@ def record_query(
 
     query = select_sql + " " + query_base
     count_query = count_sql + " " + query_base
-    print(query)
 
     sort_columns = {
         "name": "r.name",
