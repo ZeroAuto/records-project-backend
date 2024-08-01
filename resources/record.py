@@ -65,7 +65,7 @@ def record_query(
 
     if user_id:
         join_type = "LEFT JOIN"
-        select_sql += ", ur.purchased"
+        select_sql += ", ur.purchased, ur.id as users_records_id"
 
         if purchased is not None:
             join_type = "JOIN"
