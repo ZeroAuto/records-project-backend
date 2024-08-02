@@ -61,4 +61,9 @@ class SearchTextSchema(Schema):
 
 
 class AddUserRecordSchema(Schema):
+    record_id = fields.Int(required=True)
     purchased = fields.Boolean(missing=False)
+
+
+class UserRecordDumpSchema(AddUserRecordSchema):
+    user_id = fields.Int(dump_only=True)

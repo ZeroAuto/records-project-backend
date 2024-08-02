@@ -11,6 +11,7 @@ from db import db
 
 from resources.record import blp as RecordBluePrint
 from resources.user import blp as UserBluePrint
+from resources.user_record import blp as UserRecordBluePrint
 
 
 def create_app(db_url=None):
@@ -43,5 +44,6 @@ def create_app(db_url=None):
 
     api.register_blueprint(RecordBluePrint)
     api.register_blueprint(UserBluePrint)
+    api.register_blueprint(UserRecordBluePrint)
 
     return app

@@ -108,22 +108,6 @@ def record_query(
 blp = Blueprint("Records", "records", description="Operations on records")
 
 
-@blp.route("/record/add/<string:record_id>")
-class AddRecord(MethodView):
-    @jwt_required()
-    @blp.arguments(AddUserRecordSchema)
-    @blp.response(200, AddUserRecordSchema)
-    def post(cls, record_id):
-        user_id = get_jwt_identity()
-        user_record = UserRecordModel(
-            record_id=record_id,
-            user_id=user_id,
-            purchased=data['purchased']
-        )
-        db.session.add(user_record)
-        db.session.commit()
-
-
 @blp.route("/record/find")
 class FindRecordByNameAndArtist(MethodView):
     @jwt_required()
