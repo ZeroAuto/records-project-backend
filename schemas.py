@@ -60,8 +60,11 @@ class SearchTextSchema(Schema):
     offset = fields.Int()
 
 
-class AddUserRecordSchema(Schema):
+class DeleteUserRecordSchema(Schema):
     record_id = fields.Int(required=True)
+
+
+class AddUserRecordSchema(DeleteUserRecordSchema):
     purchased = fields.Boolean(missing=False)
 
 
