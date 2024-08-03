@@ -14,12 +14,6 @@ class PlainRecordSchema(Schema):
     artist_id = fields.Int()
 
 
-class UserRecordSchema(Schema):
-    id = fields.Int(dump_only=True)
-    user_id = fields.Int(required=True)
-    record_id = fields.Int(required=True)
-
-
 class RecordUpdateSchema(PlainRecordSchema):
     artist = fields.Str()
     purchased = fields.Boolean(missing=False)
@@ -64,9 +58,17 @@ class DeleteUserRecordSchema(Schema):
     record_id = fields.Int(required=True)
 
 
-class AddUserRecordSchema(DeleteUserRecordSchema):
+class PostUserRecordSchema(Schema):
+    record_id = fields.Int(required=True)
     purchased = fields.Boolean(missing=False)
 
 
-class UserRecordDumpSchema(AddUserRecordSchema):
+class UpdateUserRecordSchema(PostUserRecordSchema):
+    user_id = fields.Int(required=True)
+
+
+class UserRecordDumpSchema(Schema):
+    record_id = fields.Int(dump_only=True)
+    purchased = fields.Boolean(dump_only=True)
     user_id = fields.Int(dump_only=True)
+    id = fields.Int(dump_only=True)

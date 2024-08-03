@@ -12,12 +12,12 @@ from models import (
     UserRecordModel,
 )
 from schemas import (
-    AddUserRecordSchema,
     RecordDumpSchema,
     RecordFindSchema,
     RecordFindDumpSchema,
     RecordUpdateSchema,
     SearchTextSchema,
+    UpdateUserRecordSchema,
 )
 
 
@@ -65,7 +65,7 @@ def record_query(
 
     if user_id:
         join_type = "LEFT JOIN"
-        select_sql += ", ur.purchased, ur.id as users_records_id"
+        select_sql += ", ur.purchased, ur.id as users_records_id, ur.user_id"
 
         if purchased is not None:
             join_type = "JOIN"
