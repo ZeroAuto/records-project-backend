@@ -199,6 +199,7 @@ class UserRecord(MethodView):
             sort_direction=data["sortDirection"],
             offset=data["offset"],
             purchased=data["purchased"],
+            limit=data["limit"],
         )
 
         response = make_response(jsonify(records))
@@ -215,6 +216,7 @@ class RecordList(MethodView):
             sort_column=data["sortColumn"],
             sort_direction=data["sortDirection"],
             offset=data["offset"],
+            limit=data["limit"],
         )
 
         response = make_response(jsonify(records))

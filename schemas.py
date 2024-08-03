@@ -52,6 +52,7 @@ class SearchTextSchema(Schema):
     sortDirection = fields.Str()
     purchased = fields.Boolean(missing=None)
     offset = fields.Int()
+    limit = fields.Int(missing=20)
 
 
 class DeleteUserRecordSchema(Schema):
