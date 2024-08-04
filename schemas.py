@@ -1,4 +1,5 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validates, ValidationError
+from email_validator import validate_email, EmailNotValidError
 
 
 class ArtistSchema(Schema):
@@ -39,6 +40,13 @@ class LoginSchema(PlainUserSchema):
 class UserSchema(LoginSchema):
     email = fields.Str(required=True)
     name = fields.Str(required=True)
+
+    @validates("email")
+    def validate_email(self, value):
+        try:
+            validate_email(value)
+        except EmailNotValidError as e:
+            raise ValidationError(str(e))
 
 
 class RecordFindSchema(Schema):

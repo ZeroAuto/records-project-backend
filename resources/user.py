@@ -9,6 +9,7 @@ from flask_jwt_extended import (
 )
 from passlib.hash import pbkdf2_sha256
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from marshmallow import ValidationError
 
 from db import db
 from models import UserModel, UserRecordModel
@@ -47,8 +48,12 @@ class UserLogin(MethodView):
 class UserSignup(MethodView):
     @blp.arguments(UserSchema)
     def post(self, user_data):
-        if UserModel.query.filter(UserModel.name == user_data["name"]).first():
-            abort(409, message="A user name with that name already exists.")
+        print(user_data)
+        if UserModel.query.filter(UserModel.username == user_data["username"]).first():
+            abort(409, message="A user with that username already exists.")
+
+        if UserModel.query.filter(UserModel.email == user_data["email"]).first():
+            abort(409, message="A user with that email address already exists.")
 
         user = UserModel(
             name=user_data["name"],
@@ -61,6 +66,13 @@ class UserSignup(MethodView):
             db.session.flush()
             db.session.refresh(user)
             db.session.commit()
+
+        except ValidationError:
+            abort(
+                409,
+                message="A Validation error occurred",
+            )
+
         except IntegrityError:
             abort(
                 400,
@@ -83,9 +95,7 @@ class UserSignup(MethodView):
                     "id": user.id,
                 }, 200
 
-        abort(500, message="Something Went Wrong")
-
-        # return {"message": "User"}
+        return {"message": "User"}
 
 
 @blp.route("/logout")
@@ -95,27 +105,27 @@ class UserLogout(MethodView):
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
         return {"message": "Successfully logged out"}, 200
-
-
-@blp.route("/user/<int:user_id>")
-class User(MethodView):
-    """
-    This resource can be useful when testing our Flask app.
-    We may not want to expose it to public users, but for the
-    sake of demonstration in this course, it can be useful
-    when we are manipulating data regarding the users.
-    """
-
-    @blp.response(200, UserSchema)
-    def get(self, user_id):
-        user = UserModel.query.get_or_404(user_id)
-        return user
-
-    def delete(self, user_id):
-        user = UserModel.query.get_or_404(user_id)
-        db.session.delete(user)
-        db.session.commit()
-        return {"message": "User deleted."}, 200
+#
+#
+# @blp.route("/user/<int:user_id>")
+# class User(MethodView):
+#     """
+#     This resource can be useful when testing our Flask app.
+#     We may not want to expose it to public users, but for the
+#     sake of demonstration in this course, it can be useful
+#     when we are manipulating data regarding the users.
+#     """
+#
+#     @blp.response(200, UserSchema)
+#     def get(self, user_id):
+#         user = UserModel.query.get_or_404(user_id)
+#         return user
+#
+#     def delete(self, user_id):
+#         user = UserModel.query.get_or_404(user_id)
+#         db.session.delete(user)
+#         db.session.commit()
+#         return {"message": "User deleted."}, 200
 
 
 @blp.route("/refresh")

@@ -11,3 +11,4 @@ flask-migrate
 flask-cors
 pytest
 pytest-flask
+email-validator
