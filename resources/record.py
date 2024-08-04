@@ -43,7 +43,7 @@ def record_query(
         limit=20,
         offset=0,
     ):
-    select_sql = "SELECT r.id, r.name, r.year, r.format, a.name as artist_name"
+    select_sql = "SELECT r.*, a.name as artist_name"
     count_sql = "SELECT COUNT(*)"
     from_sql = "FROM records as r"
     join_terms = ["JOIN artists as a on r.artist_id = a.id"]
@@ -64,16 +64,16 @@ def record_query(
             )
 
     if user_id:
+        print(f"user id: {user_id}")
         join_type = "LEFT JOIN"
         select_sql += ", ur.purchased, ur.id as users_records_id, ur.user_id"
 
         if purchased is not None:
             join_type = "JOIN"
             params["purchased"] = purchased
-            where_terms.append("u.id = :user_id")
             where_terms.append("ur.purchased = :purchased")
 
-        join_terms.append(f"{join_type} users_records as ur on r.id = ur.record_id")
+        join_terms.append(f"{join_type} users_records as ur on r.id = ur.record_id AND ur.user_id = :user_id")
         join_terms.append(f"{join_type} users as u on ur.user_id = u.id")
         params["user_id"] = int(user_id)
 
