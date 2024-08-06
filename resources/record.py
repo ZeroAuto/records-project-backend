@@ -148,7 +148,18 @@ class FindRecordByNameAndArtist(MethodView):
 class Record(MethodView):
     @blp.response(200, RecordDumpSchema)
     def get(cls, record_id):
-        record = RecordModel.query.get_or_404(record_id)
+        record = db.session.query(
+            RecordModel.id,
+            RecordModel.name,
+            RecordModel.year,
+            RecordModel.format,
+            ArtistModel.name.label('artist_name'),
+        ).join(
+            ArtistModel,
+            ArtistModel.id == RecordModel.artist_id
+        ).filter(
+            RecordModel.id == record_id
+        ).first()
         return record
 
     def delete(cls, record_id):
