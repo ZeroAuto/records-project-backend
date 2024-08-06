@@ -146,8 +146,11 @@ class FindRecordByNameAndArtist(MethodView):
 
 @blp.route("/record/<string:record_id>")
 class Record(MethodView):
+    @jwt_required(optional=True)
     @blp.response(200, RecordDumpSchema)
     def get(cls, record_id):
+        current_user = get_jwt_identity()
+        print(f"current user id: {current_user}")
         record = db.session.query(
             RecordModel.id,
             RecordModel.name,
@@ -161,6 +164,22 @@ class Record(MethodView):
         ).filter(
             RecordModel.id == record_id
         ).first()
+
+        if current_user:
+            # Check if the record is associated with the current user
+            association_exists = db.session.query(
+                db.exists().where(
+                    UserRecordModel.user_id == current_user,
+                    UserRecordModel.record_id == record.id
+                )
+            ).scalar()
+
+            print(association_exists)
+
+            record_dict = record._asdict()  # Convert SQLAlchemy row object to dictionary
+            record_dict['purchased'] = association_exists
+            return record_dict
+
         return record
 
     def delete(cls, record_id):
