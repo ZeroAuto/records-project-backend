@@ -153,6 +153,7 @@ class Record(MethodView):
             RecordModel.name,
             RecordModel.year,
             RecordModel.format,
+            RecordModel.album_art_url,
             ArtistModel.name.label('artist_name'),
         ).join(
             ArtistModel,

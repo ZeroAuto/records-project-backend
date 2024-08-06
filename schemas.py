@@ -13,6 +13,7 @@ class PlainRecordSchema(Schema):
     year = fields.Int()
     format = fields.Str()
     artist_id = fields.Int()
+    album_art_url = fields.Str()
 
 
 class RecordUpdateSchema(PlainRecordSchema):

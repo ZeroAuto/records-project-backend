@@ -18,4 +18,5 @@ class RecordModel(db.Model):
     description = db.Column(db.String(255))
     year = db.Column(db.Integer)
     format = db.Column(db.String)
+    album_art_url = db.Column(db.String)
     db.UniqueConstraint(name, artist_id)
