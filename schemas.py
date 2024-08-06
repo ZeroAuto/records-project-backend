@@ -36,6 +36,7 @@ class PlainUserSchema(Schema):
 
 class LoginSchema(PlainUserSchema):
     password = fields.Str(required=True)
+    admin = fields.Boolean()
 
 
 class UserSchema(LoginSchema):

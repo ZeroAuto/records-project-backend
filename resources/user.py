@@ -39,6 +39,7 @@ class UserLogin(MethodView):
                 "refresh_token": refresh_token,
                 "name": user.name,
                 "id": user.id,
+                "admin": user.admin,
             }, 200
 
         abort(401, message="Invalid credentials")
@@ -93,6 +94,7 @@ class UserSignup(MethodView):
                     "refresh_token": refresh_token,
                     "name": user.name,
                     "id": user.id,
+                    "admin": user.admin,
                 }, 200
 
         return {"message": "User"}

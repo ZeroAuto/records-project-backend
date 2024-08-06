@@ -181,6 +181,7 @@ class Record(MethodView):
             record.name = record_data["name"]
             record.year = record_data["year"]
             record.format = record_data["format"]
+            record.album_art_url = record_data["album_art_url"]
         try:
             db.session.commit()
         except IntegrityError:
@@ -244,7 +245,8 @@ class RecordList(MethodView):
             name=record_data["name"],
             artist_id=artist_id,
             year=record_data["year"],
-            format=record_data["format"]
+            format=record_data["format"],
+            album_art_url=record_data["album_art_url"],
         )
         try:
             db.session.add(record)
