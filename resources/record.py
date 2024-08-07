@@ -241,7 +241,6 @@ class RecordList(MethodView):
     @jwt_required(optional=True)
     def get(cls, data):
         current_user = get_jwt_identity()
-        print(f"current user id: {current_user}")
         records, total_count = record_query(
             search_text=data["searchTerm"],
             sort_column=data["sortColumn"],
