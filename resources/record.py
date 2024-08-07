@@ -26,7 +26,7 @@ def find_or_create_artist(artist_name):
     artist = ArtistModel.query.filter(
         ArtistModel.name == artist_name
     ).first()
-    # if the artist doesn't exist create it
+
     if artist is None:
         artist = ArtistModel(name=artist_name)
         db.session.add(artist)
