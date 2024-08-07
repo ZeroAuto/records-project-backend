@@ -125,8 +125,8 @@ class FindRecordByNameAndArtist(MethodView):
             ArtistModel,
             ArtistModel.id == RecordModel.artist_id
         ).filter(
-            RecordModel.name == record_data["name"],
-            ArtistModel.name == record_data["artist"]
+            RecordModel.name.ilike(record_data["name"]),
+            ArtistModel.name.ilike(record_data["artist"])
         ).first()
 
         if record:
