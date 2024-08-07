@@ -28,10 +28,6 @@ class AddRecord(MethodView):
             purchased=data['purchased']
         )
         db.session.add(user_record)
-        print(user_record.id)
-        print(user_record.record_id)
-        print(user_record.purchased)
-        print(user_record.user_id)
 
         try:
             db.session.commit()
@@ -63,7 +59,6 @@ class UserRecord(MethodView):
     @blp.arguments(UpdateUserRecordSchema)
     @blp.response(200, UserRecordDumpSchema)
     def put(cls, data, user_record_id):
-        print(user_record_id)
         user_record = UserRecordModel.query.get_or_404(user_record_id)
         user_record.purchased = data["purchased"]
         user_record.record_id = data["record_id"]

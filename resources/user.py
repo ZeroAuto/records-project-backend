@@ -49,7 +49,6 @@ class UserLogin(MethodView):
 class UserSignup(MethodView):
     @blp.arguments(UserSchema)
     def post(self, user_data):
-        print(user_data)
         if UserModel.query.filter(UserModel.username == user_data["username"]).first():
             abort(409, message="A user with that username already exists.")
 
