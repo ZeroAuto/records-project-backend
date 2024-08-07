@@ -23,7 +23,8 @@ class RecordUpdateSchema(PlainRecordSchema):
 
 class RecordDumpSchema(PlainRecordSchema):
     artist_name = fields.Str(dump_only=True)
-    purchased = fields.Str()
+    purchased = fields.Boolean()
+    owned_by_user = fields.Boolean()
 
 
 class RecordFindDumpSchema(RecordDumpSchema):

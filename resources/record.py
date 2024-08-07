@@ -4,6 +4,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from sqlalchemy.orm import joinedload
 
 from db import db
 from models import (
@@ -150,7 +151,6 @@ class Record(MethodView):
     @blp.response(200, RecordDumpSchema)
     def get(cls, record_id):
         current_user = get_jwt_identity()
-        print(f"current user id: {current_user}")
         record = db.session.query(
             RecordModel.id,
             RecordModel.name,
@@ -173,11 +173,17 @@ class Record(MethodView):
                     UserRecordModel.record_id == record.id
                 )
             ).scalar()
-
-            print(association_exists)
-
             record_dict = record._asdict()  # Convert SQLAlchemy row object to dictionary
-            record_dict['purchased'] = association_exists
+            record_dict["owned_by_user"] = association_exists
+
+            if association_exists: 
+                user_record = db.session.query(UserRecordModel).filter_by(
+                    user_id = current_user,
+                    record_id = record.id,
+                ).first()
+
+                record_dict["purchased"] = user_record.purchased
+
             return record_dict
 
         return record
@@ -190,8 +196,10 @@ class Record(MethodView):
 
     @blp.arguments(RecordUpdateSchema)
     @blp.response(200, RecordDumpSchema)
+    @jwt_required()
     def put(cls, record_data, record_id):
         record = RecordModel.query.get(record_id)
+        current_user = get_jwt_identity()
 
         if record:
             if "artist" in record_data:
@@ -201,6 +209,15 @@ class Record(MethodView):
             record.year = record_data["year"]
             record.format = record_data["format"]
             record.album_art_url = record_data["album_art_url"]
+
+            if record_data["purchased"] is not None:
+                user_record = db.session.query(UserRecordModel).filter_by(
+                    user_id = current_user,
+                    record_id = record.id,
+                ).first()
+                if user_record:
+                    user_record.purchased = record_data["purchased"]
+
         try:
             db.session.commit()
         except IntegrityError:
@@ -216,38 +233,23 @@ class Record(MethodView):
 
         return record
 
-@blp.route("/record/user")
-class UserRecord(MethodView):
-    @jwt_required()
-    @blp.arguments(SearchTextSchema, location="query")
-    @blp.response(200, RecordDumpSchema(many=True))
-    def get(cls, data):
-        user_id = get_jwt_identity()
-        records, total_count = record_query(
-            search_text=data["searchTerm"],
-            user_id=user_id,
-            sort_column=data["sortColumn"],
-            sort_direction=data["sortDirection"],
-            offset=data["offset"],
-            purchased=data["purchased"],
-            limit=data["limit"],
-        )
-
-        response = make_response(jsonify(records))
-        response.headers["X-Total-Count"] = total_count
-        return response
 
 @blp.route("/record")
 class RecordList(MethodView):
     @blp.arguments(SearchTextSchema, location="query")
     @blp.response(200, RecordDumpSchema(many=True))
+    @jwt_required(optional=True)
     def get(cls, data):
+        current_user = get_jwt_identity()
+        print(f"current user id: {current_user}")
         records, total_count = record_query(
             search_text=data["searchTerm"],
             sort_column=data["sortColumn"],
             sort_direction=data["sortDirection"],
             offset=data["offset"],
             limit=data["limit"],
+            user_id=current_user,
+            purchased=data["purchased"],
         )
 
         response = make_response(jsonify(records))
