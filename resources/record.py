@@ -22,6 +22,45 @@ from schemas import (
 )
 
 
+def find_single_record(record_id, current_user):
+    record = db.session.query(
+        RecordModel.id,
+        RecordModel.name,
+        RecordModel.year,
+        RecordModel.format,
+        RecordModel.album_art_url,
+        ArtistModel.name.label('artist_name'),
+    ).join(
+        ArtistModel,
+        ArtistModel.id == RecordModel.artist_id
+    ).filter(
+        RecordModel.id == record_id
+    ).first()
+
+    if current_user:
+        # Check if the record is associated with the current user
+        association_exists = db.session.query(
+            db.exists().where(
+                UserRecordModel.user_id == current_user,
+                UserRecordModel.record_id == record.id
+            )
+        ).scalar()
+        record_dict = record._asdict()  # Convert SQLAlchemy row object to dictionary
+        record_dict["owned_by_user"] = association_exists
+
+        if association_exists: 
+            user_record = db.session.query(UserRecordModel).filter_by(
+                user_id = current_user,
+                record_id = record.id,
+            ).first()
+
+            record_dict["purchased"] = user_record.purchased
+
+        return record_dict
+
+    return record
+
+
 def find_or_create_artist(artist_name):
     artist = ArtistModel.query.filter(
         ArtistModel.name == artist_name
@@ -151,41 +190,7 @@ class Record(MethodView):
     @blp.response(200, RecordDumpSchema)
     def get(cls, record_id):
         current_user = get_jwt_identity()
-        record = db.session.query(
-            RecordModel.id,
-            RecordModel.name,
-            RecordModel.year,
-            RecordModel.format,
-            RecordModel.album_art_url,
-            ArtistModel.name.label('artist_name'),
-        ).join(
-            ArtistModel,
-            ArtistModel.id == RecordModel.artist_id
-        ).filter(
-            RecordModel.id == record_id
-        ).first()
-
-        if current_user:
-            # Check if the record is associated with the current user
-            association_exists = db.session.query(
-                db.exists().where(
-                    UserRecordModel.user_id == current_user,
-                    UserRecordModel.record_id == record.id
-                )
-            ).scalar()
-            record_dict = record._asdict()  # Convert SQLAlchemy row object to dictionary
-            record_dict["owned_by_user"] = association_exists
-
-            if association_exists: 
-                user_record = db.session.query(UserRecordModel).filter_by(
-                    user_id = current_user,
-                    record_id = record.id,
-                ).first()
-
-                record_dict["purchased"] = user_record.purchased
-
-            return record_dict
-
+        record = find_single_record(record_id, current_user)
         return record
 
     def delete(cls, record_id):
@@ -230,6 +235,8 @@ class Record(MethodView):
                 500,
                 message="An error occurred during record creation"
             )
+
+        record = find_single_record(record_id, current_user)
 
         return record
 
